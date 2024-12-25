@@ -2,6 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "vercel-build": "composer install && php artisan optimize",
         "build": "vite build",
         "dev": "vite"
     },
