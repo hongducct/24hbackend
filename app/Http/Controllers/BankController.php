@@ -6,34 +6,47 @@ use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Throwable;
+use Illuminate\Validation\Rule;
 
 class BankController extends Controller
 {
-    // Tương tự như OrderStatusController, thay OrderStatus bằng Bank
     public function index(): JsonResponse
     {
         $banks = Bank::all();
         return response()->json($banks);
     }
 
-    public function store(Request $request)
+    public function getBankByUserId($user_id): JsonResponse
     {
+        $banks = Bank::where('user_id', $user_id)->get();
+        return response()->json($banks);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        // dd($request->all());
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'bank_name' => 'required|string|max:255',
-            'account_number' => 'required|string', // Nên thêm validation cho định dạng account_number
+            'account_number' => 'required|string', // Thêm unique validation
             'account_name' => 'required|string',
+            'address' => 'required|string',
+            'site' => 'required|string',
+            'bankaccount' => 'required|string',
+            'tel' => 'required|string',
         ]);
 
-        // Kiểm tra xem user đã có tài khoản ngân hàng chưa
-        $existingBank = Bank::where('user_id', $request->user_id)->first();
+        // Kiểm tra xem user đã có tài khoản ngân hàng chưa (kiểm tra theo cả account_number)
+        $existingBank = Bank::where('user_id', $request->user_id)
+            ->where('account_number', $request->account_number)
+            ->first();
 
         if ($existingBank) {
             return response()->json([
-                'message' => 'User already has a bank account.',
-            ], Response::HTTP_CONFLICT); // Status code 409 Conflict
+                'message' => 'User already has a bank account with this account number.',
+            ], Response::HTTP_CONFLICT);
         }
-
         try {
             $bank = Bank::create($request->all());
             return response()->json($bank, Response::HTTP_CREATED);
@@ -41,7 +54,7 @@ class BankController extends Controller
             \Log::error($e);
             return response()->json([
                 'message' => 'Failed to create bank account.',
-                'error' => $e->getMessage(), // Chỉ trả về message lỗi trong môi trường dev
+                'error' => config('app.debug') ? $e->getMessage() : 'Server error', // Chỉ hiển thị lỗi chi tiết trong môi trường dev
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -54,9 +67,19 @@ class BankController extends Controller
     public function update(Request $request, Bank $bank): JsonResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:banks,name,' . $bank->id,
-            // Các validation khác
+            'bank_name' => 'required|string|max:255',
+            'account_number' => [
+                'required',
+                'string',
+                Rule::unique('banks')->ignore($bank->id),
+            ],
+            'account_name' => 'required|string',
+            'address' => 'nullable|string',
+            'site' => 'nullable|string',
+            'bankaccount' => 'nullable|string',
+            'tel' => 'nullable|string',
         ]);
+
         $bank->update($request->all());
         return response()->json($bank);
     }

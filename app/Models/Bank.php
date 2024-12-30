@@ -14,6 +14,10 @@ class Bank extends Model
         'bank_name',
         'account_name',
         'account_number',
+        'address',
+        'site',
+        'bankaccount',
+        'tel'
     ];
     public function user(): BelongsTo
     {

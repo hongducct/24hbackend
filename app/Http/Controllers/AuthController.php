@@ -41,6 +41,7 @@ class AuthController extends Controller
             'name' => 'nullable|string|max:255',
             'email' => 'nullable|email|unique:users',
             'password' => 'required|min:6',
+            'password_confirmation' => 'required|same:password',
             'username' => 'required|string|max:255|unique:users',
             'avatar' => 'nullable|string',
             'commission' => 'nullable|numeric',
@@ -49,11 +50,15 @@ class AuthController extends Controller
             'payment_password' => 'required|min:6',
         ],[
             'invitation_code.required' => 'Vui lòng nhập mã mời.',
-            'invitation_code.exists' => 'Mã mời không chính xác.',
+            'invitation_code.exists' => 'Mã mời không tồn tại.',
             'email.unique' => 'Email đã tồn tại.',
             'username.unique' => 'Tên người dùng đã tồn tại.',
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
             'payment_password.min' => 'Mật khẩu thanh toán phải có ít nhất 6 ký tự.',
+            'payment_password.required' => 'Vui lòng nhập mật khẩu thanh toán.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password_confirmation.required' => 'Vui lòng xác nhận mật khẩu.',
+            'password_confirmation.same' => 'Xác nhận mật khẩu không khớp.',
             // 'payment_password.confirmed' => 'Xác nhận mật khẩu thanh toán không khớp.',
         ]);
 

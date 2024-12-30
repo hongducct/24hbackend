@@ -22,7 +22,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::apiResource('users', UserController::class);
 Route::apiResource('products', ProductController::class);
 Route::apiResource('banks', BankController::class);
+Route::get('banks/{user}/bank', [BankController::class, 'getBankByUserId']);
 Route::apiResource('orders', OrderController::class);
 Route::apiResource('order-statuses', OrderStatusController::class); // Đổi tên route cho rõ ràng
-
+Route::patch('users/{user}/change-password', [UserController::class, 'changePassword']); // Đổi mật khẩu
+    Route::patch('users/{user}/change-payment-password', [UserController::class, 'changePaymentPassword']); // Đổi mật khẩu thanh toán
 Route::get('/orders/{order}/details', [OrderController::class, 'orderDetails']); // Route tùy chỉnh cho chi tiết đơn hàng

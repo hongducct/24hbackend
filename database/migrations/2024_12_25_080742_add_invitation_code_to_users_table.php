@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('invitation_code')->nullable(); // Cho phép null nếu không bắt buộc ngay lập tức
+            // $table->string('invitation_code')->nullable(); // Cho phép null nếu không bắt buộc ngay lập tức
             $table->foreign('invitation_code')->references('code')->on('invitations')->onDelete('set null'); // Khóa ngoại đến bảng invitations
         });
     }
